@@ -5,7 +5,7 @@ They are written in [Rust](https://rust-lang.org).
 
 My reason for doing these are, besides the fact that I like puzzle solving, I want to learn Rust.
 
-You need Rust, [rustup](https://rustup.rs/) is the suggested was to install, that is about it.
+You need Rust, [rustup](https://rustup.rs/) is the suggested way to install Rust, that is about it.  You may need to add some SSL libraries, dependiong on operating system, but the installation process will tell you, if so.
 
 Run all the days with:
 ```
