@@ -9,9 +9,10 @@ You need Rust, [rustup](https://rustup.rs/) is the suggested way to install Rust
 
 Run all the days with:
 ```
-cargo run
+cargo run input/
 ```
 
+Where "input/" is a prefix for the days' inputs, named 01, 02, etc.
 The tests (the examples given in the days' descriptions) can be run with:
 ```
 cargo test
