@@ -1,8 +1,8 @@
-#[macro_use]
+//#[macro_use]
 extern crate simple_error;
 
 mod day;
-//mod day01;
+mod day01;
 //mod day02;
 //mod day03;
 //mod day04;
@@ -36,7 +36,7 @@ fn main() {
     let args = env::args().collect::<Vec<_>>();
     let prefix = &args[1];
     let days: Vec<Box<dyn day::Day>> = vec![
-//        Box::new(day01::Day01 {}), Box::new(day02::Day02 {}),
+        Box::new(day01::Day01 {}),// Box::new(day02::Day02 {}),
 //        Box::new(day03::Day03 {}), Box::new(day04::Day04 {}),
 //        Box::new(day05::Day05 {}), Box::new(day06::Day06 {}),
 //        Box::new(day07::Day07 {}), Box::new(day08::Day08 {}),
@@ -48,10 +48,10 @@ fn main() {
 //        Box::new(day19::Day19 {}), Box::new(day20::Day20 {}),
 //        Box::new(day21::Day21 {}), Box::new(day22::Day22 {}),
 //        Box::new(day23::Day23 {}), Box::new(day24::Day24 {}),
-//        Box::new(day25::Day25 {})
+//        Box::new(day25::Day25 {}),
     ];
     let inputs = days.iter().map(|day| format!("{}{}", prefix, day.tag()));
-    for day in days.iter().zip(inputs) {
+    for day in days.iter().zip(inputs).rev() {
         let input: Box<dyn Fn() -> Box<dyn io::Read>>
             = Box::new(|| Box::new(fs::File::open(&day.1).unwrap()));
         println!("= {} =", day.0.tag());
