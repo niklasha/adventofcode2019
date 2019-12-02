@@ -23,4 +23,5 @@ My results were:
       -------Part 1--------   -------Part 2--------
 Day       Time  Rank  Score       Time  Rank  Score
   1   00:06:31  1090      0   00:19:58  1246      0
+  2   00:42:23  3020      0   00:54:01  2538      0
 ```
