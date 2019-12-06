@@ -40,7 +40,10 @@ impl Day06 {
         Ok(self.count(&mut ts, 0))
     }
 
-    fn transfers(&self, m: &collections::HashMap<String, collections::HashSet<String>>, root: &str, s: &str) -> Option<usize> {
+    fn distance(&self,
+                m: &collections::HashMap<String, collections::HashSet<String>>,
+                root: &str, s: &str)
+        -> Option<usize> {
         if root == s { Some(0) }
         else if let Some(orbiters) = m.get(root) {
             let d = orbiters.iter().map(|o|
@@ -50,13 +53,18 @@ impl Day06 {
         } else { None }
     }
 
-    fn (&self, m: &collections::HashMap<String, collections::HashSet<String>>, root: &str, a: &str, b: &str) -> Option<usize> {
+    fn transfers(&self,
+                 m: &collections::HashMap<String, collections::HashSet<String>>,
+                 root: &str, a: &str, b: &str)
+        -> Option<usize> {
         let a_dist = self.distance(m, root, a);
         let b_dist = self.distance(m, root, b);
         if let Some(a_dist) = a_dist {
             if let Some(b_dist) = b_dist {
                 if let Some(orbiters) = m.get(root) {
-                    if let Some(dist) = orbiters.iter().map(|o| self.foo(m, o, a, b)).find(|e| e.is_some()) {
+                    if let Some(dist) = orbiters.iter().map(|o|
+                        self.transfers(m, o, a, b))
+                        .find(|e| e.is_some()) {
                         dist
                     } else { Some(a_dist + b_dist) }
                 } else { Some(a_dist + b_dist) }
@@ -81,7 +89,7 @@ impl Day06 {
             orbiters.unwrap().insert(v.to_owned());
         });
         for root in ts.peek_all() {
-            if let Some(n) = self.foo(&map, root, "YOU", "SAN") {
+            if let Some(n) = self.transfers(&map, root, "YOU", "SAN") {
                 return Ok(n - 2);
             }
         }
