@@ -67,12 +67,16 @@ impl Day04 {
     }
 
     fn ok_2_functional(&self, s: &str) -> bool {
-        let r = s.bytes().fold((None, 0, true, false), |s, d| {
-            let dup = s.0.map_or(false, |e| d == e);
-            (Some(d), if dup { s.1 + 1 } else { 1 },
-             s.2 && s.0.map_or(true, |e| d >= e), s.3 || (s.1 == 2 && !dup))
+        let (_, running, increasing, exactly_two)
+            = s.bytes()
+            .fold((None, 0, true, false),
+                  |(last, running, increasing, exactly_two), digit| {
+            let duplicate = last == Some(digit);
+            (Some(digit), if duplicate { running + 1 } else { 1 },
+             increasing && (last == None || digit >= last.unwrap()),
+             exactly_two || (running == 2 && !duplicate))
         });
-        r.2 && (r.3 || r.1 == 2)
+        increasing && (exactly_two || running == 2)
     }
 
     fn part2_impl(self: &Self, input: &mut dyn io::Read)
