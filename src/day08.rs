@@ -50,22 +50,3 @@ impl Day08 {
         Ok(result)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-//    fn test1(s: &str, i: usize, v: usize) {
-//        assert_eq!(
-//            Day08 {}.part1_impl(&mut s.as_bytes()).unwrap(), v);
-//    }
-//
-//    #[test]
-//    fn part1() {
-//        test1("123456789012", 0, 2);
-//        test1("2,3,0,3,99", 3, 6);
-//        test1("2,4,4,5,99,0", 5, 9801);
-//        test1("1,1,1,4,99,5,6,0,99", 0, 30);
-//        test1("1,9,10,3,2,3,11,0,99,30,40,50", 0, 3500);
-//    }
-}
