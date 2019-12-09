@@ -61,14 +61,14 @@ impl Intcode {
                 1 => {
                     let a = self.val(ip, 1);
                     let b = self.val( ip, 2);
-                    let c = self.addr(ip, 3) as usize;
+                    let c = self.addr(ip, 3);
                     self.put(c, a + b);
                     ip += 4;
                 },
                 2 => {
                     let a = self.val(ip, 1);
                     let b = self.val(ip, 2);
-                    let c = self.addr(ip, 3) as usize;
+                    let c = self.addr(ip, 3);
                     self.put(c, a * b);
                     ip += 4;
                 },
@@ -100,14 +100,14 @@ impl Intcode {
                 7 => {
                     let a = self.val(ip, 1);
                     let b = self.val(ip, 2);
-                    let c = self.addr(ip, 3) as usize;
+                    let c = self.addr(ip, 3);
                     self.put(c, if a < b { 1 } else { 0 });
                     ip += 4;
                 },
                 8 => {
                     let a = self.val(ip, 1);
                     let b = self.val(ip, 2);
-                    let c = self.addr(ip,3) as usize;
+                    let c = self.addr(ip,3);
                     self.put(c, if a == b { 1 } else { 0 });
                     ip += 4;
                 },
