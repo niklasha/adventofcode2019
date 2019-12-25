@@ -1,12 +1,22 @@
 use simple_error::bail;
+use closure::closure;
 use evmap;
+use evmap::{ReadHandle, WriteHandle};
 use std::error;
 use std::io;
 use std::io::BufRead;
 use std::sync::mpsc;
 use std::thread;
 use crate::day;
-use evmap::{ReadHandle, WriteHandle};
+
+macro_rules! enclose {
+    ( ($( $x:ident ),*) $y:expr ) => {
+        {
+            $(let $x = $x.clone();)*
+            $y
+        }
+    };
+}
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
@@ -21,6 +31,7 @@ impl Intcode {
     fn op(&self, c: i64) -> i64 { c % 100 }
 
     fn get(&mut self, a: usize) -> i64 {
+//        eprintln!("get {}", a);
         if a >= self.p.len() { self.p.resize(a + 1, 0); }
         self.p[a]
     }
@@ -54,8 +65,8 @@ impl Intcode {
         v
     }
 
-    fn run(&mut self, sender: mpsc::Sender<i64>, receiver: mpsc::Receiver<i64>,
-        request: mpsc::Sender<()>, ack: mpsc::Receiver<()>) -> BoxResult<i64> {
+    fn run(&mut self, sender: &mpsc::Sender<i64>, receiver: &mpsc::Receiver<i64>,
+        request: &mpsc::Sender<()>, ack: &mpsc::Receiver<()>) -> BoxResult<i64> {
         let mut ip = 0;
         let mut o = None;
         while { let op = self.get(ip); self.op(op) != 99 } {
@@ -194,10 +205,10 @@ impl Intcode {
     }
 }
 
-pub struct Day17 {}
+pub struct Day19 {}
 
-impl day::Day for Day17 {
-    fn tag(&self) -> &str { "17" }
+impl day::Day for Day19 {
+    fn tag(&self) -> &str { "19" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {
         let reader = io::BufReader::new(input());
@@ -206,9 +217,7 @@ impl day::Day for Day17 {
             .map(|s| s.trim_end().parse::<i64>().unwrap())
             .collect::<Vec<_>>();
         let (grid_r, mut grid_w) = evmap::new();
-        let mut o = (0, 0);
-        let mut dir = (0, 0);
-        println!("{:?}", self.part1_impl(p, &grid_r, &mut grid_w, &mut o, &mut dir));
+        println!("{:?}", self.part1_impl(p, &grid_r, &mut grid_w));
     }
 
     fn part2(&self, input: &dyn Fn() -> Box<dyn io::Read>) {
@@ -217,187 +226,101 @@ impl day::Day for Day17 {
             .map(|v| String::from_utf8(v.unwrap()).unwrap())
             .map(|s| s.trim_end().parse::<i64>().unwrap())
             .collect::<Vec<_>>();
-        let mut p2 = p.clone();
-        p2[0] = 2;
-        let mut o = (0, 0);
-        let mut dir = (0, 0);
         let (grid_r, mut grid_w) = evmap::new();
-        self.part1_impl(p, &grid_r, &mut grid_w, &mut o, &mut dir).unwrap();
-        println!("{:?}", self.part2_impl(p2, &grid_r, &mut grid_w, o, dir));
+        println!("{:?}", self.part2_impl(p, &grid_r, &mut grid_w));
     }
 }
 
-impl Day17 {
+impl Day19 {
     fn part1_impl(self: &Self, p: Vec<i64>,
-                  grid_r: &ReadHandle<(i32, i32), char>,
-                  grid_w: &mut WriteHandle<(i32, i32), char>,
-                  origin: &mut (i32, i32), dir: &mut (i32, i32))
-        -> BoxResult<i32> {
-        let (_input_sender, input_receiver) = mpsc::channel::<i64>();
-        let (output_sender, output_receiver) = mpsc::channel::<i64>();
-        let (request_sender, _request_receiver) = mpsc::channel::<()>();
-        let (ack_sender, ack_receiver) = mpsc::channel::<()>();
-        let _cpu = thread::spawn(move || {
-            let mut ic = Intcode::new(&p);
-            ic.run(output_sender, input_receiver, request_sender, ack_receiver)
-                .unwrap_or(0);
-        });
-
-        let mut s = String::new();
-        let (mut x, mut y) = (0, 0);
-        let mut t = 0;
-        while match output_receiver.recv() {
-            Ok(b) => {
-                ack_sender.send(()).unwrap();
-                let c = b as u8 as char;
-                s.push(c);
-                grid_w.update((x, y).clone(), c);
-                grid_w.refresh();
-                match c {
-                    '#' => {
-                        if y > 0 && x > 0
-                            && grid_r.get_and(&(x, y - 1), |c| c[0]) == Some('#')
-                            && grid_r.get_and(&(x - 1, y - 1), |c| c[0]) == Some('#')
-                            && grid_r.get_and(&(x + 1, y - 1), |c| c[0]) == Some('#') {
-                            t += x * (y - 1);
-                        };
-                        x += 1;
-                    },
-                    '.' => { x += 1; },
-                    '^' => { *origin = (x, y); *dir = (0, -1); x += 1; }
-                    'v' => { *origin = (x, y); *dir = (0, 1); x += 1; }
-                    '<' => { *origin = (x, y); *dir = (-1, 0); x += 1; }
-                    '>' => { *origin = (x, y); *dir = (1, 0); x += 1; }
-                    '\n' => { x = 0; y += 1; },
-                    _ => (),
-                }
-                true
-            },
-            Err(_) => false,
-        } {};
-        eprintln!("{}", s);
-
-        Ok(t)
-    }
-
-    fn part2_impl(self: &Self, p: Vec<i64>,
-                  grid_r: &ReadHandle<(i32, i32), char>,
-                  grid_w: &mut WriteHandle<(i32, i32), char>,
-                  origin: (i32, i32), dir: (i32, i32))
+                  grid_r: &ReadHandle<(i64, i64), char>,
+                  grid_w: &mut WriteHandle<(i64, i64), char>)
         -> BoxResult<i64> {
         let (input_sender, input_receiver) = mpsc::channel::<i64>();
         let (output_sender, output_receiver) = mpsc::channel::<i64>();
         let (request_sender, request_receiver) = mpsc::channel::<()>();
         let (ack_sender, ack_receiver) = mpsc::channel::<()>();
+        let (start_sender, start_receiver) = mpsc::channel::<()>();
+
         let _cpu = thread::spawn(move || {
-            let mut ic = Intcode::new(&p);
-            ic.run(output_sender, input_receiver, request_sender, ack_receiver)
-                .unwrap_or(0);
-        });
-        let mut s = String::new();
-        for _i in 0..2047 {
-            match output_receiver.recv().unwrap() as u8 as char {
-                '\n' => { eprintln!("{}", s); s = String::new(); },
-                c => { s.push(c); }
-            };
-            ack_sender.send(()).unwrap();
-        }
-
-//        eprintln!("{:?} {:?}", origin, dir);
-
-        let is_ok = |(x, y), (dx, dy)| {
-            grid_r.get_and(&(x + dx, y + dy), |c| c[0]) == Some('#')
-        };
-
-        let run = |(x, y), (dx, dy)| {
-            let len = (1..).position(|i| !is_ok((x, y), (dx * i, dy * i)))
-                .unwrap()
-                as i32;
-            if len == 0 { None } else { Some(((x + len * dx, y + len * dy), len, (dx, dy))) }
-        };
-
-        let mut n = 0;
-        let mut pos = origin;
-        let mut last = None;
-        let mut face = dir;
-        loop {
-            let (_m, next, next_face) =
-                if let Some((next, dist, next_face)) = run(pos, face) {
-                    (format!("{}", dist), next, next_face)
-                } else if let Some((next, dist, next_face)) = run(pos, (face.1, -face.0)) {
-                    (format!("L,{}", dist), next, next_face)
-                } else if let Some((next, dist, next_face)) = run(pos, (-face.1, face.0)) {
-                    (format!("R,{}", dist), next, next_face)
-                } else {
-                    let (next, dist, next_face) = run(pos, (-face.0, -face.1)).unwrap();
-                    (format!("L,L,{}", dist), next, next_face)
-                };
-            if Some(next) == last { break; }
-//            eprintln!("{:?}", _m);
-            face = next_face;
-            last = Some(pos);
-            pos = next;
-        }
-        // XXX
-        let instructions = "A,B,B,A,B,C,A,C,B,C
-L,4,L,6,L,8,L,12
-L,8,R,12,L,12
-R,12,L,6,L,6,L,8
-y
-";
-        for c in instructions.chars() {
-            request_receiver.recv().unwrap();
-            input_sender.send(c as i64).unwrap();
-            match c {
-                '\n' => {
-                    loop {
-                        let mut done = false;
-                        match output_receiver.recv().unwrap() as u8 as char {
-                            '\n' => { eprintln!("{}", s); s = String::new(); done = true; },
-                            c => { s.push(c); }
-                        };
-                        ack_sender.send(()).unwrap();
-                        if (done) { break; }
-                    };
-                },
-                _ => (),
+            while start_receiver.recv().is_ok() {
+                let mut ic = Intcode::new(&p.clone());
+                ic.run(&output_sender, &input_receiver, &request_sender, &ack_receiver)
+                    .unwrap_or(0);
             }
-        }
+        });
 
-        let mut s = String::new();
-        let (mut x, mut y) = (0, 0);
-        while match output_receiver.recv() {
-            Ok(b) => {
-                ack_sender.send(()).unwrap();
-                let c = b as u8 as char;
-                s.push(c);
-                match c {
-                    '#' => {
-                        x += 1;
-                    },
-                    '.' => { x += 1; },
-                    '^' => { x += 1; }
-                    'v' => { x += 1; }
-                    '<' => { x += 1; }
-                    '>' => { x += 1; }
-                    '\n' => {
-                        eprintln!("{}", s);
-                        s = String::new();
-                        x = 0;
-                        y += 1;
-                    },
-                    _ => {
-                        eprintln!("whoa: {}", b);
-                        n += b;
-                        x += 1;
-                    },
-                }
-                true
-            },
-            Err(_) => false,
-        } {};
+        Ok((0..50).flat_map(|x|
+            (0..50).map(closure!(
+                ref start_sender, ref request_receiver, ref input_sender,
+                ref output_receiver, ref ack_sender
+                |y| {
+                    start_sender.send(()).unwrap();
+                    request_receiver.recv().unwrap();
+                    input_sender.send(x).unwrap();
+                    request_receiver.recv().unwrap();
+                    input_sender.send(y).unwrap();
+                    let o = output_receiver.recv().unwrap();
+                    ack_sender.send(()).unwrap();
+                    o
+                })))
+            .sum())
+    }
 
-        Ok(n)
+    fn part2_impl(self: &Self, p: Vec<i64>,
+                  grid_r: &ReadHandle<(i64, i64), i64>,
+                  grid_w: &mut WriteHandle<(i64, i64), i64>)
+                  -> BoxResult<i64> {
+        let (input_sender, input_receiver) = mpsc::channel::<i64>();
+        let (output_sender, output_receiver) = mpsc::channel::<i64>();
+        let (request_sender, request_receiver) = mpsc::channel::<()>();
+        let (ack_sender, ack_receiver) = mpsc::channel::<()>();
+        let (start_sender, start_receiver) = mpsc::channel::<()>();
+        let _cpu = thread::spawn(move || {
+            while start_receiver.recv().is_ok() {
+                let mut ic = Intcode::new(&p.clone());
+                ic.run(&output_sender, &input_receiver, &request_sender, &ack_receiver)
+                    .unwrap_or(0);
+            }
+        });
+
+        let (mut x, mut y) = (2, 3);
+        let mut look_for_one = true;
+        let mut ox = -1;
+        loop {
+            start_sender.send(()).unwrap();
+            request_receiver.recv().unwrap();
+            input_sender.send(x).unwrap();
+            request_receiver.recv().unwrap();
+            input_sender.send(y).unwrap();
+            let o = output_receiver.recv().unwrap();
+            ack_sender.send(()).unwrap();
+            grid_w.update((x, y), o);
+            grid_w.refresh();
+            if x >= 99 && y >= 99 && o == 1  {
+                if grid_r.get_and(&(x - 99, y - 99), |c| { c[0] }) == Some(1)
+                    && grid_r.get_and(&(x - 99, y), |c| { c[0] }) == Some(1)
+                    && grid_r.get_and(&(x, y - 99), |c| { c[0] }) == Some(1) {
+                    break;
+                };
+            };
+            if o == 0 {
+                if look_for_one {
+                    x += 1;
+                } else {
+                    x = ox;
+                    y += 1;
+                    look_for_one = true;
+                };
+            } else {
+                if look_for_one {
+                    ox = x;
+                };
+                x += 1;
+                look_for_one = false;
+            };
+        };
+        Ok((x - 99) * 10000 + (y - 99))
     }
 }
 
@@ -406,7 +329,7 @@ mod tests {
     use super::*;
 
     fn test1(s: &str, v: usize) {
-//        assert_eq!(Day17 {}.part1_impl(s), v);
+//        assert_eq!(Day19 {}.part1_impl(s), v);
     }
 
     #[test]
@@ -420,15 +343,4 @@ mod tests {
 ..#...#...#..
 ..#####...^..", 76);
     }
-
-//    fn test2(s: &str, n: usize, v: &str) {
-////        assert_eq!(Day16 {}.part2_impl(s, n).unwrap(), v);
-//        assert_eq!(Day17 {}.part2_helper(s, n, 1, 0).unwrap(), v);
-//    }
-//
-////    #[test]
-//    fn part2() {
-//        test2("56781234", 10, "");
-////        test2("03036732577212944063491565474664", 100, "84462026");
-//    }
 }

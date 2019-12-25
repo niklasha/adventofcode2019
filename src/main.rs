@@ -1,4 +1,6 @@
 #[macro_use]
+extern crate closure;
+#[macro_use]
 extern crate lazy_static;
 //#[macro_use]
 extern crate simple_error;
@@ -21,14 +23,14 @@ mod day14;
 mod day15;
 mod day16;
 mod day17;
-//mod day18;
-//mod day19;
-//mod day20;
-//mod day21;
-//mod day22;
-//mod day23;
-//mod day24;
-//mod day25;
+mod day18;
+mod day19;
+mod day20;
+mod day21;
+mod day22;
+mod day23;
+mod day24;
+mod day25;
 
 use std::env;
 use std::fs;
@@ -46,11 +48,11 @@ fn main() {
         Box::new(day11::Day11 {}), Box::new(day12::Day12 {}),
         Box::new(day13::Day13 {}), Box::new(day14::Day14 {}),
         Box::new(day15::Day15 {}), Box::new(day16::Day16 {}),
-        Box::new(day17::Day17 {}), //Box::new(day18::Day18 {}),
-//        Box::new(day19::Day19 {}), Box::new(day20::Day20 {}),
-//        Box::new(day21::Day21 {}), Box::new(day22::Day22 {}),
-//        Box::new(day23::Day23 {}), Box::new(day24::Day24 {}),
-//        Box::new(day25::Day25 {}),
+        Box::new(day17::Day17 {}), Box::new(day18::Day18 {}),
+        Box::new(day19::Day19 {}), Box::new(day20::Day20 {}),
+        Box::new(day21::Day21 {}), Box::new(day22::Day22 {}),
+        Box::new(day23::Day23 {}), Box::new(day24::Day24 {}),
+        Box::new(day25::Day25 {}),
     ];
     let inputs = days.iter().map(|day| format!("{}{}", prefix, day.tag()));
     for day in days.iter().zip(inputs).rev() {
