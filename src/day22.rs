@@ -1,13 +1,6 @@
-use closure::closure;
-use evmap;
-use itertools::Itertools;
-use itertools::FoldWhile::{Continue, Done};
 use modinverse::modinverse;
 //use modular::*;
-use num::integer::{gcd, lcm};
 use regex::Regex;
-use simple_error::bail;
-use std::collections::{HashMap, HashSet};
 use std::error;
 use std::io;
 use std::io::BufRead;

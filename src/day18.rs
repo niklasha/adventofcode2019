@@ -1,7 +1,6 @@
 use evmap;
 use itertools::Itertools;
 use itertools::FoldWhile::{Continue, Done};
-use simple_error::bail;
 use std::error;
 use std::io;
 use std::io::BufRead;

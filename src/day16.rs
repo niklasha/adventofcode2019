@@ -1,11 +1,4 @@
-use core_memo::*;
-use itertools::Itertools;
-use itertools::FoldWhile::{Continue, Done};
 use num::abs;
-use num::integer::lcm;
-use simple_error::bail;
-use std::cmp::min;
-use std::collections::HashMap;
 use std::error;
 use std::io;
 use std::io::BufRead;
@@ -79,7 +72,7 @@ impl Day16 {
         }).collect::<Vec<_>>();
         output.reverse();
 
-        let output = (2..=phases).fold(output, |input, i| {
+        let output = (2..=phases).fold(output, |input, _| {
             let period = input.len();
             let start = offset;
             assert!(start + start >= len);

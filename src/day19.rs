@@ -9,15 +9,6 @@ use std::sync::mpsc;
 use std::thread;
 use crate::day;
 
-macro_rules! enclose {
-    ( ($( $x:ident ),*) $y:expr ) => {
-        {
-            $(let $x = $x.clone();)*
-            $y
-        }
-    };
-}
-
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
 struct Intcode {
@@ -326,7 +317,7 @@ impl Day19 {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+//    use super::*;
 
     fn test1(s: &str, v: usize) {
 //        assert_eq!(Day19 {}.part1_impl(s), v);

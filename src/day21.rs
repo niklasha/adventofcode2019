@@ -1,5 +1,4 @@
 use simple_error::bail;
-use closure::closure;
 use evmap;
 use evmap::{ReadHandle, WriteHandle};
 use std::error;
@@ -8,15 +7,6 @@ use std::io::BufRead;
 use std::sync::mpsc;
 use std::thread;
 use crate::day;
-
-macro_rules! enclose {
-    ( ($( $x:ident ),*) $y:expr ) => {
-        {
-            $(let $x = $x.clone();)*
-            $y
-        }
-    };
-}
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
@@ -264,7 +254,7 @@ impl Day21 {
 //                eprint!("{}", o as u8 as char);
                 line += format!("{}", o as u8 as char).as_str();
                 if o == 10 {
-                    if (stop < 99) { eprint!("{}", line); };
+                    if stop < 99 { eprint!("{}", line); };
                     line = String::new();
                     i += 1;
                     if i == stop { break; }

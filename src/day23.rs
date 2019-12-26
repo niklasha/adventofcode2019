@@ -1,7 +1,6 @@
 use simple_error::bail;
 use closure::closure;
 use evmap;
-use evmap::{ReadHandle, WriteHandle};
 use std::error;
 use std::io;
 use std::io::BufRead;
@@ -9,15 +8,6 @@ use std::sync::{Arc, Mutex};
 use std::sync::mpsc;
 use std::thread;
 use crate::day;
-
-macro_rules! enclose {
-    ( ($( $x:ident ),*) $y:expr ) => {
-        {
-            $(let $x = $x.clone();)*
-            $y
-        }
-    };
-}
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
@@ -438,7 +428,7 @@ impl Day23 {
                 nat_sender.send((x, y));
             }
         }
-        for (_, thread, _) in config.into_iter() { thread.join(); }
+//        for (_, thread, _) in config.into_iter() { thread.join(); }
 
         Ok(r)
     }

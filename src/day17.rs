@@ -357,7 +357,7 @@ y
                             c => { s.push(c); }
                         };
                         ack_sender.send(()).unwrap();
-                        if (done) { break; }
+                        if done { break; }
                     };
                 },
                 _ => (),
@@ -403,7 +403,7 @@ y
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+//    use super::*;
 
     fn test1(s: &str, v: usize) {
 //        assert_eq!(Day17 {}.part1_impl(s), v);
