@@ -1,4 +1,4 @@
-use std::io;
+pub use std::io;
 
 pub trait Day {
     fn tag(&self) -> &str;

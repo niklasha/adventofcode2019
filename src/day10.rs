@@ -2,15 +2,14 @@ use num::abs;
 use num_integer::gcd;
 use num_rational::Ratio;
 use std::error;
-use std::io;
 use std::io::BufRead;
-use crate::day;
+use crate::day::*;
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
 pub struct Day10 {}
 
-impl day::Day for Day10 {
+impl Day for Day10 {
     fn tag(&self) -> &str { "10" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {

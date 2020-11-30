@@ -2,12 +2,11 @@ use simple_error::bail;
 use closure::closure;
 use evmap;
 use std::error;
-use std::io;
 use std::io::BufRead;
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc;
 use std::thread;
-use crate::day;
+use crate::day::*;
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
@@ -198,7 +197,7 @@ impl Intcode {
 
 pub struct Day23 {}
 
-impl day::Day for Day23 {
+impl Day for Day23 {
     fn tag(&self) -> &str { "23" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {

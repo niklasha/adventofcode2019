@@ -3,15 +3,14 @@ use itertools::Itertools;
 use itertools::FoldWhile::{Continue, Done};
 use std::collections::{HashMap, HashSet};
 use std::error;
-use std::io;
 use std::io::BufRead;
-use crate::day;
+use crate::day::*;
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
 pub struct Day20 {}
 
-impl day::Day for Day20 {
+impl Day for Day20 {
     fn tag(&self) -> &str { "20" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {

@@ -1,15 +1,14 @@
 use simple_error::bail;
 use std::collections;
 use std::error;
-use std::io;
 use std::io::BufRead;
-use crate::day;
+use crate::day::*;
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
 pub struct Day03 {}
 
-impl day::Day for Day03 {
+impl Day for Day03 {
     fn tag(&self) -> &str { "03" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {

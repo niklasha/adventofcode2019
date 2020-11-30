@@ -2,16 +2,15 @@ use evmap;
 use itertools::Itertools;
 use itertools::FoldWhile::{Continue, Done};
 use std::error;
-use std::io;
 use std::io::BufRead;
-use crate::day;
+use crate::day::*;
 use std::collections::HashSet;
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
 pub struct Day18 {}
 
-impl day::Day for Day18 {
+impl Day for Day18 {
     fn tag(&self) -> &str { "18" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {

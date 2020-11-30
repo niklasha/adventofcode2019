@@ -1,15 +1,14 @@
 use regex::Regex;
 use std::collections::HashMap;
 use std::error;
-use std::io;
 use std::io::BufRead;
-use crate::day;
+use crate::day::*;
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
 pub struct Day14 {}
 
-impl day::Day for Day14 {
+impl Day for Day14 {
     fn tag(&self) -> &str { "14" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {

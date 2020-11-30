@@ -1,16 +1,15 @@
 use simple_error::bail;
 use std::collections;
 use std::error;
-use std::io;
 use std::io::BufRead;
 use topological_sort;
-use crate::day;
+use crate::day::*;
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
 pub struct Day06 {}
 
-impl day::Day for Day06 {
+impl Day for Day06 {
     fn tag(&self) -> &str { "06" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {

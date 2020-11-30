@@ -34,12 +34,12 @@ mod day25;
 
 use std::env;
 use std::fs;
-use std::io;
+use crate::day::*;
 
 fn main() {
     let args = env::args().collect::<Vec<_>>();
     let prefix = &args[1];
-    let days: Vec<Box<dyn day::Day>> = vec![
+    let days: Vec<Box<dyn Day>> = vec![
         Box::new(day01::Day01 {}), Box::new(day02::Day02 {}),
         Box::new(day03::Day03 {}), Box::new(day04::Day04 {}),
         Box::new(day05::Day05 {}), Box::new(day06::Day06 {}),

@@ -1,8 +1,7 @@
 use num::abs;
 use std::error;
-use std::io;
 use std::io::BufRead;
-use crate::day;
+use crate::day::*;
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
@@ -10,7 +9,7 @@ pub struct Day16 {}
 
 fn round_up(x: usize, p: usize) -> usize { (x + p - 1) / p * p }
 
-impl day::Day for Day16 {
+impl Day for Day16 {
     fn tag(&self) -> &str { "16" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {

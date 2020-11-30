@@ -1,17 +1,16 @@
 use permute;
 use simple_error::bail;
 use std::error;
-use std::io;
 use std::io::BufRead;
 use std::sync::mpsc;
 use std::thread;
-use crate::day;
+use crate::day::*;
 
 pub type BoxResult<T> = Result<T, Box<dyn error::Error>>;
 
 pub struct Day07 {}
 
-impl day::Day for Day07 {
+impl Day for Day07 {
     fn tag(&self) -> &str { "07" }
 
     fn part1(&self, input: &dyn Fn() -> Box<dyn io::Read>) {
